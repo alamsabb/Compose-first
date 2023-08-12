@@ -1,5 +1,6 @@
 package com.example.composefile
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
@@ -27,6 +28,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -55,6 +59,36 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun game() {
+    var Score: MutableState<Int> = remember {
+        mutableStateOf(0)
+    }
+    var choose: MutableState<Int> = remember {
+        mutableStateOf(0)
+    }
+    var chooseAndroid: MutableState<Int> = remember {
+        mutableStateOf(0)
+    }
+    lateinit var msg:String
+    lateinit var msgAndroid:String
+    var winnng = determineWinner(choose.value,chooseAndroid.value)
+
+    if(Score.value==4){
+        Score.value=0
+    }
+    if (choose.value==1){
+        msg="Rock"
+    }else if (choose.value==2){
+        msg="Paper"
+    }else{
+        msg="Scissor"
+    }
+    if (chooseAndroid.value==1){
+        msgAndroid="Rock"
+    }else if (chooseAndroid.value==2){
+        msgAndroid="Paper"
+    }else{
+        msgAndroid="Scissor"
+    }
     val contexxt = LocalContext.current
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -69,8 +103,9 @@ fun game() {
                 .padding(20.dp)
         )
         Text(text = "Score", textAlign = TextAlign.Center, fontSize = 25.sp)
+        Toast.makeText(contexxt,winnng,Toast.LENGTH_LONG).show()
         Text(
-            text = "0 / 4",
+            text = "${Score.value} / 4",
             fontSize = 40.sp
         )
         Spacer(modifier = Modifier.height(60.dp))
@@ -81,11 +116,11 @@ fun game() {
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = "You Chose")
-                Text(text = "Rock", fontSize = 30.sp)
+                Text(text = msg , fontSize = 30.sp)
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = "Android Chose")
-                Text(text = "Paper", fontSize = 30.sp)
+                Text(text = msgAndroid, fontSize = 30.sp)
             }
         }
         Spacer(modifier = Modifier.height(100.dp))
@@ -105,7 +140,9 @@ fun game() {
             ) {
                 Button(
                     onClick = {
-                        Toast.makeText(contexxt, "Rock", Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(contexxt, "Rock", Toast.LENGTH_SHORT).show()
+                        choose.value=1
+                        chooseAndroid.value=randomNumber()
                     },
                     modifier = Modifier.size(110.dp),
                     shape = RoundedCornerShape(10.dp),
@@ -116,7 +153,10 @@ fun game() {
                 }
                 Button(
                     onClick = {
-                        Toast.makeText(contexxt, "Paper", Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(contexxt, "Paper", Toast.LENGTH_SHORT).show()
+                        choose.value=2
+                        chooseAndroid.value=randomNumber()
+
                     },
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.size(110.dp),
@@ -127,7 +167,10 @@ fun game() {
                 }
                 Button(
                     onClick = {
-                        Toast.makeText(contexxt, "Scissor", Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(contexxt, "Scissor", Toast.LENGTH_SHORT).show()
+                        choose.value=3
+                        chooseAndroid.value=randomNumber()
+
                     },
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.size(110.dp),
@@ -142,4 +185,33 @@ fun game() {
         }
 
     }
+}
+fun randomNumber():Int {
+    var value=((1..3).random())
+    return value
+}
+fun determineWinner(user:Int, androidChoice:Int):String{
+    lateinit var message:String
+    if(user==androidChoice){
+        message="DRAW"
+    }else if(user==1){
+        if (androidChoice==2){
+            message="User Win"
+        }else{
+            message="Android Win"
+        }
+    }else if(user==2){
+        if(androidChoice==1){
+           message="User Win"
+        }else{
+            message="Android Win"
+        }
+    }else{
+        if(androidChoice==1){
+            message="Android Win"
+        }else{
+            message="User Win"
+        }
+    }
+    return message
 }
